@@ -1,5 +1,5 @@
 'use strict';
-module.exports =function(ReviewData) {
+module.exports =function(commonResponseWrapper, ReviewData) {
     let module = {};
 
     // TODO: standardize response with response codes, something like:
@@ -8,7 +8,9 @@ module.exports =function(ReviewData) {
     // TODO: We aren't using ReviewData now, should remove until we need it
 
     module.help = function(req, res){
-        res.send('Add some detailed docs here in plaintext or something later')
+        commonResponseWrapper.code = 200;
+        commonResponseWrapper.content = 'Add some detailed docs here in plaintext or something later';
+        res.jsonp(commonResponseWrapper)
     }
 
     return module;
