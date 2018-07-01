@@ -1,0 +1,24 @@
+{
+  "name": "BIG_test",
+  "version": "0.0.1",
+  "description": "using leafly data, an api/ui to sort strains",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WanderingHogan/big.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WanderingHogan/big/issues"
+  },
+  "homepage": "https://github.com/WanderingHogan/big#readme",
+  "dependencies": {
+    "corser": "^2.0.1",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.7"
+  }
+}
