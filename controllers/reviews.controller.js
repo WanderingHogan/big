@@ -54,6 +54,30 @@ module.exports =function(commonResponseWrapper, ReviewData) {
  
     }
 
+    module.getByDate = function(req, res) {
+    	let lowDate = req.query.lowDate;
+    	let highDate = req.query.highDate;
+    	// let on = new Date(req.query.on).toISOString();
+    	let on = new Date(req.query.on);
+    	console.log(on)
+    	console.log(new Date(on.setTime( on.getTime() + 1 * 86400000 )))
+    	if(on){
+			ReviewData.find({
+	    	    "timestamp": {
+			        $gte: on.toISOString(),
+			        $lte: new Date(on.setTime( on.getTime() + 1 * 86400000 )).toISOString()
+			    }
+		    }).exec(function (err, data) {
+		    	console.log(err, data)
+	     		if(err) return res.status(500).send({status: 'server error occurred'})
+	     		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
+	            else return res.status(200).send(data);
+			});
+    	}
+    }
+
+ 
+
 
     return module;
 }

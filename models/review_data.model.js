@@ -6,7 +6,7 @@ module.exports = function(mongoose) {
         _id         : ObjectId,
         text    : String,
         rating    : Number,
-        timestamp: Date,
+        timestamp: String,
         category: String,
         subcatgory: String,
         product: String
