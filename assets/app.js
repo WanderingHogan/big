@@ -11,15 +11,7 @@ let filtered2016 = []
 // default filters
 let startDate = '2016-01-01'
 let endDate = '2018-12-30'
-let rating = ''
-// let ratings = [
-// 		  { text: 'All', value: '' },
-// 	      { text: '1', value: '1' },
-// 	      { text: '2', value: '2' },
-// 	      { text: '3', value: '3' },
-// 	      { text: '4', value: '4' },
-// 	      { text: '5', value: '5' }
-// 	    ]
+let rating = 'All'
 
 // default stats
 let count = 0
@@ -45,18 +37,10 @@ let unpad = function(str) {
 
 
 function requestData() {
-
-	console.log('doing ajax req with: ', startDate, endDate, rating)
-
 	$.get( `/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}`, function( data ) {
-
 	  	max = data.data.length
-
 		$("#recordCount").text(max)
-
 		updateFilters(data)
-
-
 	});
 }
 

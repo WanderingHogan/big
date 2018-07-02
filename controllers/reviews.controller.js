@@ -81,6 +81,9 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         let startDate = req.query.startDate;
         let endDate = req.query.endDate;
         let rating = req.query.rating;
+        if(rating === 'All'){
+            rating = '';
+        }
         let category = req.query.category;
         let subcategory = req.query.subcategory;
 
