@@ -6,7 +6,9 @@ module.exports =function(commonResponseWrapper, ReviewData) {
     // {status: success, data: <data>} or {status: fail, message: 'something fucked up'}
     module.getAllReviews = function(req, res){
         ReviewData.find().exec(function (err, data) {
-            return res.jsonp(data);
+    		if(err) return res.status(500).send({status: 'server error occurred'})
+    		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
+            return res.status(200).send({status: 'Success', data: data});
         });
     }
 
@@ -23,7 +25,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
      	]).exec(function (err, data) {
     		if(err) return res.status(500).send({status: 'server error occurred'})
     		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
-            return res.status(200).send(data);
+            return res.status(200).send({status: 'Success', data: data});
 		});
     }
 
@@ -37,7 +39,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
 			// add error handling'range, can only be 1, 2, 3, 4, 5
      		if(err) return res.status(500).send({status: 'server error occurred'})
      		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
-            else return res.status(200).send(data);
+            return res.status(200).send({status: 'Success', data: data});
 		});
  
     }
@@ -49,7 +51,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
     	ReviewData.find({product: searchWord}).exec(function (err, data) {
      		if(err) return res.status(500).send({status: 'server error occurred'})
      		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
-            else return res.status(200).send(data);
+            return res.status(200).send({status: 'Success', data: data});
 		});
  
     }
@@ -71,7 +73,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
 		    	console.log(err, data)
 	     		if(err) return res.status(500).send({status: 'server error occurred'})
 	     		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
-	            else return res.status(200).send(data);
+	            else return res.status(200).send({status: 'Success', data: data});
 			});
     	}
     }
