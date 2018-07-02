@@ -1,12 +1,30 @@
-Vue.filter('formatDate', function(d) {
-	if(!window.Intl) return d;
-	return new Intl.DateTimeFormat('en-US').format(new Date(d));
-}); 
+// Vue.filter('formatDate', function(d) {
+// 	if(!window.Intl) return d;
+// 	return new Intl.DateTimeFormat('en-US').format(new Date(d));
+// }); 
 
-
+// shared arrays with each calendar years data
 let filtered2018 = []
 let filtered2017 = []
 let filtered2016 = []
+
+// default filters
+let startDate = '2016-01-01'
+let endDate = '2018-12-30'
+let rating = ''
+// let ratings = [
+// 		  { text: 'All', value: '' },
+// 	      { text: '1', value: '1' },
+// 	      { text: '2', value: '2' },
+// 	      { text: '3', value: '3' },
+// 	      { text: '4', value: '4' },
+// 	      { text: '5', value: '5' }
+// 	    ]
+
+// default stats
+let count = 0
+let max = 0
+
 
 // helper functions to get date into usable format
 let pad = function(str) {
@@ -22,6 +40,96 @@ let unpad = function(str) {
 	str.replace(/-0/g, '-')
 }
 
+
+
+
+
+function requestData() {
+
+	console.log('doing ajax req with: ', startDate, endDate, rating)
+
+	$.get( `/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}`, function( data ) {
+
+	  	max = data.data.length
+
+		$("#recordCount").text(max)
+
+		updateFilters(data)
+
+
+	});
+}
+
+function updateFilters(data) {
+	let filtered2018 = []
+	let filtered2017 = []
+	let filtered2016 = []
+	let newMax = 0;
+	console.log('map data')
+	data.chartData.map(function(a){
+		if(a.count > newMax) newMax = a.count;
+		if(a.date.startsWith('2018')){
+			filtered2018.push([a.date, a.count])
+		}
+		if(a.date.startsWith('2017')){
+			filtered2017.push([a.date, a.count])
+		}
+		if(a.date.startsWith('2016')){
+			filtered2016.push([a.date, a.count])
+		}
+	})
+
+
+	// console.log(data.length)
+	// console.log('setting chart options', filtered2018, filtered2017, filtered2016)
+	myChart.setOption({
+			visualMap: {
+				max: newMax
+			},
+		    series: [{
+		        calendarIndex: 0,
+		        data: filtered2018
+		    }, {
+		        calendarIndex: 1,
+		        data: filtered2017
+		    }, {
+		        calendarIndex: 2,
+		        data: filtered2016
+		    }]
+	});
+	this.max = newMax;
+	this.searching = false;
+	this.results = data;
+	this.count = data.length;
+}
+
+// Watch the filters in the header
+$( "#startDateBox" ).change(function() {
+	startDate = $("#startDateBox").val()
+	requestData()
+});
+
+$( "#endDateBox" ).change(function() {
+	endDate = $("#endDateBox").val()
+	requestData()
+});
+
+$( "#ratingSelector" ).change(function() {
+	rating = $("#ratingSelector").val()
+	requestData()
+});
+
+$("#clearFilters").click(function(event){
+	event.preventDefault()
+	startDate = '2016-01-01'
+	endDate = '2018-12-30'
+	rating = 'All'
+	$("#startDateBox").val(startDate)
+	$("#endDateBox").val(endDate)
+	$("#ratingSelector").val(rating)
+	requestData()
+
+})
 
 let myChart = echarts.init(document.getElementById('calendarChart'));
 
@@ -108,83 +216,19 @@ option = {
 myChart.setOption(option); 
 
 
-const app = new Vue({
-	el:'#app',
-	data:{
-		startDate:'2016-01-01',
-		endDate: '2018-12-30',
-		ratingsSelected: '',
-		ratings: [
-		  { text: 'All', value: '' },
-	      { text: '1', value: '1' },
-	      { text: '2', value: '2' },
-	      { text: '3', value: '3' },
-	      { text: '4', value: '4' },
-	      { text: '5', value: '5' }
-	    ],
-		count: 0,
-		max: 0,
-		results:[],
-		noResults:false,
-		searching:false
-	},
-	methods:{
-		search: function() {
-			this.searching = true;
-			fetch(`/api/reviewFilter?startDate=${encodeURIComponent(this.startDate)}&endDate=${encodeURIComponent(this.endDate)}&rating=${this.ratingsSelected}`)
-			.then(res => res.json())
-			.then(res => {
-				// pverwrite rid of old arrays
-				let filtered2018 = []
-				let filtered2017 = []
-				let filtered2016 = []
-				let newMax = 0;
-				res.chartData.map(function(a){
-					if(a.count > newMax) newMax = a.count;
-					if(a.date.startsWith('2018')){
-						filtered2018.push([a.date, a.count])
-					}
-					if(a.date.startsWith('2017')){
-						filtered2017.push([a.date, a.count])
-					}
-					if(a.date.startsWith('2016')){
-						filtered2016.push([a.date, a.count])
-					}
-				})
-				myChart.setOption({
-						visualMap: {
-							max: newMax
-						},
-					    series: [{
-					        calendarIndex: 0,
-					        data: filtered2018
-					    }, {
-					        calendarIndex: 1,
-					        data: filtered2017
-					    }, {
-					        calendarIndex: 2,
-					        data: filtered2016
-					    }]
-				});
-				this.max = newMax;
-				this.searching = false;
-				this.results = res.data;
-				this.count = res.data.length;
-				// this.noResults = this.results.length === 0;
-			});
-		},
-		clear: function() {
-			this.startDate = '2016-01-01'
-			this.endDate = '2018-12-30'
-			this.search()
-		},
-	}
+$( document ).ready(function() {
+    console.log( "page loaded - request data" );
+    requestData()
+
+    // load filters with defaults
+    $("#startDateBox").val(startDate)
+    $("#endDateBox").val(endDate)
+    $("#ratingSelector").val(rating)
+
 });
-//do this on page load
-app.search()
 
 myChart.on('click', function (params) {
-    app['startDate'] = params.value[0]
-    app['endDate'] = params.value[0]
-    app.search()
+    startDate = params.value[0]
+    endDate = params.value[0]
+    requestData()
 });

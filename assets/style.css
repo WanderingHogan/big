@@ -6,3 +6,20 @@ img {
 .result {
 	padding-bottom: 5px;
 }
+
+.widgetBox {
+	padding-top: 125px;
+}
+
+#calendarChart {
+	width: auto;
+	height:650px;
+	margin-left: 0px;
+	margin-top: -30px;
+}
+
+.sideChartColumn {
+	padding-left: 20px !important;
+	padding-top: 20px;
+	text-align: center;
+}
