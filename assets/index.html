@@ -1,1 +1,74 @@
-hello world
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>BIG Code Challenge</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+		<style>
+		[v-cloak] {display: none}
+		</style>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<h1>Leafly Review Data</h1>
+		<div id="calendarChart" style="width: 95%;height:650px;"></div>
+		<div id="app" v-cloak>
+			<!-- <input v-model="term" type="search"> -->
+			<input 
+				v-model="startDate" 
+				type="date" 
+				id="startDateBox"
+				name="Start Date"
+               	value="2016-1-1"
+               	min="2016-01-01"
+               	max="2018-6-31"
+               	@change="search">
+			<input 
+				v-model="endDate" 
+				type="date" 
+				id="endDateBox"
+				name="End Date"
+               	value="2018-6-30"
+               	min="2016-01-01"
+               	max="2018-6-31"
+               	@change="search">
+			<select v-model="ratingsSelected" @change="search">
+			  <option v-for="option in ratings" v-bind:value="option.value">
+			    {{ option.text }}
+			  </option>
+			</select>
+			<!-- <button @click="search">Search</button> -->
+
+			
+
+			<h5 v-if="count > 0">{{count}} Product Reviews Found. {{max}} Maximum Reviews per 
+			Day</h5>
+			<p/>
+
+			<div v-for="result in results" class="result">
+				<b>Product Name:</b> {{result.product}}<br/>
+				<b>Category:</b> {{result.category}}<br/>
+				<b>Subcategory:</b> {{result.subcategory}}<br/>
+				<b>Rating:</b> {{result.rating}}<br/>
+				<b>Review:</b> {{result.text}}<br/>
+				<b>Date:</b> {{result.timestamp}}<br/>
+
+				<br clear="left">
+			</div>
+
+			<div v-if="noResults">
+				Sorry, but no results were found. I blame Apple.
+			</div>
+
+			<div v-if="searching">
+				<i>Searching...</i>
+			</div>
+
+		</div>
+		<script src="lib/echarts.js"></script>
+		<script src="https://unpkg.com/vue"></script>
+		<!-- <script src="lib/vue-echarts.js"></script> -->
+		<script src="app.js"></script>
+	</body>
+</html>
