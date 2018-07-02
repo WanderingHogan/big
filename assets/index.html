@@ -33,6 +33,7 @@
                	min="2016-01-01"
                	max="2018-6-31"
                	@change="search">
+			
 			<select v-model="ratingsSelected" @change="search">
 			  <option v-for="option in ratings" v-bind:value="option.value">
 			    {{ option.text }}

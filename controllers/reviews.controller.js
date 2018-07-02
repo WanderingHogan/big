@@ -95,10 +95,16 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         }
 
         if(startDate){
-            queryObj.timestamp.$gte = String(new Date(startDate).toISOString())
+            let isoStartDate = new Date(startDate)
+            let stringDate = new Date(isoStartDate).toISOString() // ghetto timezone workaround, this was geting the right date but applying a timezone offset
+            stringDate = stringDate.split('T')[0] + 'T00:00:00.000Z'
+            queryObj.timestamp.$gte = stringDate //add start of day
         }
         if(endDate){
-            queryObj.timestamp.$lte = String(new Date(endDate).toISOString())
+            let isoEndDate = new Date(endDate);
+            let stringDate = new Date(isoEndDate).toISOString() // ghetto timezone workaround, this was geting the right date but applying a timezone offset
+            stringDate = stringDate.split('T')[0] + 'T23:59:59.999Z'
+            queryObj.timestamp.$lte = stringDate //add end of day
         }
         if(rating){
             queryObj.rating = Number(rating)
@@ -109,7 +115,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         if(subcategory){
             queryObj.subcategory = String(subcategory)
         }
-        // console.log(queryObj)
+        console.log(queryObj)
 
         ReviewData.find(queryObj).exec(function (err, data) {
             if(err) return res.status(500).send({status: 'server error occurred'})
@@ -119,7 +125,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             // TODO: refactor to an aggregae query, have mongo do this instead of blocking thread here
             data.map(function(record){
                 let simpleDate = new Date(record.timestamp)
-                let simpleDateString = `${simpleDate.getFullYear()}-${simpleDate.getMonth()}-${simpleDate.getDate()}`
+                let simpleDateString = `${simpleDate.getFullYear()}-${simpleDate.getMonth() + 1}-${simpleDate.getDate() + 1}` // month and date are 0 based
                 dateArray.push(simpleDateString)
             })
 
@@ -128,6 +134,8 @@ module.exports =function(commonResponseWrapper, ReviewData) {
                 (!r[s])? r[s] = {date: s, count: 1} : r[s]['count']+=1;
                 return r;
             }, {}));
+
+            console.log(countObject)
 
             return res.status(200).send({status: 'Success', data: data, chartData: countObject});
         });

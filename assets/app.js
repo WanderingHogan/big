@@ -38,18 +38,15 @@ option = {
         top: 'top',
         show: false
     },
-
     calendar: [
     {
         range: '2018',
-        cellSize: ['auto', 20],
-        right: 5
+        cellSize: ['auto', 20]
     },
     {
         top: 250,
         range: '2017',
-        cellSize: ['auto', 20],
-        right: 5
+        cellSize: ['auto', 20]
     },
     {
         top: 450,
@@ -62,17 +59,33 @@ option = {
         type: 'heatmap',
         coordinateSystem: 'calendar',
         calendarIndex: 0,
-        data: getVirtulData(2018)
+        data: getVirtulData(2018),
+        tooltip: {
+        	formatter: function (params) {
+        		console.log('hi', params.value[0])
+        		return `<b>Reviews:</b> ${params.value[1]}</br><b>Date:</b> ${params.value[0]}`
+        	}
+        }
     }, {
         type: 'heatmap',
         coordinateSystem: 'calendar',
         calendarIndex: 1,
-        data: getVirtulData(2017)
+        data: getVirtulData(2017),
+        tooltip: {
+        	formatter: function (params) {
+        		return `<b>Reviews:</b> ${params.value[1]}</br><b>Date:</b> ${params.value[0]}`
+        	}
+        }
     }, {
         type: 'heatmap',
         coordinateSystem: 'calendar',
         calendarIndex: 2,
-        data: getVirtulData(2016)
+        data: getVirtulData(2016),
+        tooltip: {
+        	formatter: function (params) {
+        		return `<b>Reviews:</b> ${params.value[1]}</br><b>Date:</b> ${params.value[0]}`
+        	}
+        }
     }]
 
 };
@@ -124,7 +137,7 @@ const app = new Vue({
 						filtered2016.push([a.date, a.count])
 					}
 				})
-				console.log('setting new chart data')
+				console.log(JSON.stringify(filtered2017))
 				myChart.setOption({
 						visualMap: {
 							max: newMax
@@ -151,3 +164,10 @@ const app = new Vue({
 });
 //do this on page load
 app.search()
+
+myChart.on('click', function (params) {
+	console.log(params.value)
+    app['startDate'] = params.value[0];
+    app['endDate'] = params.value[0];
+    app.search()
+});
