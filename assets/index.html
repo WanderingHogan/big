@@ -20,18 +20,12 @@
 				type="date" 
 				id="startDateBox"
 				name="Start Date"
-               	value="2016-1-1"
-               	min="2016-01-01"
-               	max="2018-6-31"
                	@change="search">
 			<input 
 				v-model="endDate" 
 				type="date" 
 				id="endDateBox"
 				name="End Date"
-               	value="2018-6-30"
-               	min="2016-01-01"
-               	max="2018-6-31"
                	@change="search">
 			
 			<select v-model="ratingsSelected" @change="search">
@@ -39,7 +33,7 @@
 			    {{ option.text }}
 			  </option>
 			</select>
-			<!-- <button @click="search">Search</button> -->
+			<button @click="clear">Clear Filters</button>
 
 			
 

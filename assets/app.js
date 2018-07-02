@@ -8,6 +8,21 @@ let filtered2018 = []
 let filtered2017 = []
 let filtered2016 = []
 
+// helper functions to get date into usable format
+let pad = function(str) {
+  return function(str) {
+    while (str.length < n) {
+      str = '0'+ str;
+    }
+    return str;
+  }
+};
+
+let unpad = function(str) {
+	str.replace(/-0/g, '-')
+}
+
+
 let myChart = echarts.init(document.getElementById('calendarChart'));
 
 function getVirtulData(year) {
@@ -62,7 +77,6 @@ option = {
         data: getVirtulData(2018),
         tooltip: {
         	formatter: function (params) {
-        		console.log('hi', params.value[0])
         		return `<b>Reviews:</b> ${params.value[1]}</br><b>Date:</b> ${params.value[0]}`
         	}
         }
@@ -97,8 +111,8 @@ myChart.setOption(option);
 const app = new Vue({
 	el:'#app',
 	data:{
-		startDate:'2016-1-1',
-		endDate: '2018-6-30',
+		startDate:'2016-01-01',
+		endDate: '2018-12-30',
 		ratingsSelected: '',
 		ratings: [
 		  { text: 'All', value: '' },
@@ -115,7 +129,7 @@ const app = new Vue({
 		searching:false
 	},
 	methods:{
-		search:function() {
+		search: function() {
 			this.searching = true;
 			fetch(`/api/reviewFilter?startDate=${encodeURIComponent(this.startDate)}&endDate=${encodeURIComponent(this.endDate)}&rating=${this.ratingsSelected}`)
 			.then(res => res.json())
@@ -137,7 +151,6 @@ const app = new Vue({
 						filtered2016.push([a.date, a.count])
 					}
 				})
-				console.log(JSON.stringify(filtered2017))
 				myChart.setOption({
 						visualMap: {
 							max: newMax
@@ -159,15 +172,19 @@ const app = new Vue({
 				this.count = res.data.length;
 				// this.noResults = this.results.length === 0;
 			});
-		}
+		},
+		clear: function() {
+			this.startDate = '2016-01-01'
+			this.endDate = '2018-12-30'
+			this.search()
+		},
 	}
 });
 //do this on page load
 app.search()
 
 myChart.on('click', function (params) {
-	console.log(params.value)
-    app['startDate'] = params.value[0];
-    app['endDate'] = params.value[0];
+    app['startDate'] = params.value[0]
+    app['endDate'] = params.value[0]
     app.search()
 });

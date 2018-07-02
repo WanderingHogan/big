@@ -61,8 +61,6 @@ module.exports =function(commonResponseWrapper, ReviewData) {
     	let highDate = req.query.highDate;
     	// let on = new Date(req.query.on).toISOString();
     	let on = new Date(req.query.on);
-    	console.log(on)
-    	console.log(new Date(on.setTime( on.getTime() + 1 * 86400000 )))
     	if(on){
 			ReviewData.find({
 	    	    "timestamp": {
@@ -70,7 +68,6 @@ module.exports =function(commonResponseWrapper, ReviewData) {
 			        $lte: new Date(on.setTime( on.getTime() + 1 * 86400000 )).toISOString()
 			    }
 		    }).exec(function (err, data) {
-		    	console.log(err, data)
 	     		if(err) return res.status(500).send({status: 'server error occurred'})
 	     		if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
 	            else return res.status(200).send({status: 'Success', data: data});
@@ -97,7 +94,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         if(startDate){
             let isoStartDate = new Date(startDate)
             let stringDate = new Date(isoStartDate).toISOString() // ghetto timezone workaround, this was geting the right date but applying a timezone offset
-            stringDate = stringDate.split('T')[0] + 'T00:00:00.000Z'
+            stringDate = stringDate.split('T')[0] + 'T00:00:00.001Z'
             queryObj.timestamp.$gte = stringDate //add start of day
         }
         if(endDate){
@@ -115,7 +112,6 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         if(subcategory){
             queryObj.subcategory = String(subcategory)
         }
-        console.log(queryObj)
 
         ReviewData.find(queryObj).exec(function (err, data) {
             if(err) return res.status(500).send({status: 'server error occurred'})
@@ -124,8 +120,11 @@ module.exports =function(commonResponseWrapper, ReviewData) {
 
             // TODO: refactor to an aggregae query, have mongo do this instead of blocking thread here
             data.map(function(record){
-                let simpleDate = new Date(record.timestamp)
-                let simpleDateString = `${simpleDate.getFullYear()}-${simpleDate.getMonth() + 1}-${simpleDate.getDate() + 1}` // month and date are 0 based
+                let simpleDate = new Date(record.timestamp).toISOString()
+                simpleDate = simpleDate.split('T')[0] + 'T23:59:59.999Z'
+                let offsetDateObject = new Date(simpleDate)
+
+                let simpleDateString = `${offsetDateObject.getFullYear()}-${offsetDateObject.getMonth() + 1}-${offsetDateObject.getDate()}` // month and date are 0 based
                 dateArray.push(simpleDateString)
             })
 
@@ -135,7 +134,6 @@ module.exports =function(commonResponseWrapper, ReviewData) {
                 return r;
             }, {}));
 
-            console.log(countObject)
 
             return res.status(200).send({status: 'Success', data: data, chartData: countObject});
         });
