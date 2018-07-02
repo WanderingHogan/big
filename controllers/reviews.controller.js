@@ -78,8 +78,60 @@ module.exports =function(commonResponseWrapper, ReviewData) {
     	}
     }
 
- 
+    module.reviewFilter = function(req, res) {
 
+        //optional params, return all if not specified
+        let startDate = req.query.startDate;
+        let endDate = req.query.endDate;
+        let rating = req.query.rating;
+        let category = req.query.category;
+        let subcategory = req.query.subcategory;
+
+        let queryObj = {
+            "timestamp": {
+                "$gte": "2010-09-30T00:00:00.000Z", //arbitrary start date
+                "$lte": new Date().toISOString()
+            }
+        }
+
+        if(startDate){
+            queryObj.timestamp.$gte = String(new Date(startDate).toISOString())
+        }
+        if(endDate){
+            queryObj.timestamp.$lte = String(new Date(endDate).toISOString())
+        }
+        if(rating){
+            queryObj.rating = Number(rating)
+        }
+        if(category){
+            queryObj.category = String(category)
+        }
+        if(subcategory){
+            queryObj.subcategory = String(subcategory)
+        }
+        // console.log(queryObj)
+
+        ReviewData.find(queryObj).exec(function (err, data) {
+            if(err) return res.status(500).send({status: 'server error occurred'})
+            if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
+            let dateArray = []
+
+            // TODO: refactor to an aggregae query, have mongo do this instead of blocking thread here
+            data.map(function(record){
+                let simpleDate = new Date(record.timestamp)
+                let simpleDateString = `${simpleDate.getFullYear()}-${simpleDate.getMonth()}-${simpleDate.getDate()}`
+                dateArray.push(simpleDateString)
+            })
+
+            //create final object with date and count of records that fall on that date
+            let countObject = Object.values(dateArray.reduce((r,s) => {
+                (!r[s])? r[s] = {date: s, count: 1} : r[s]['count']+=1;
+                return r;
+            }, {}));
+
+            return res.status(200).send({status: 'Success', data: data, chartData: countObject});
+        });
+    }
 
     return module;
 }

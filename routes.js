@@ -17,5 +17,6 @@ module.exports = function(app, ReviewData) {
     app.get("/api/getByRating/:rating", reviewsController.getByRating);
     app.get("/api/getByString/:searchWord", reviewsController.getByString);
     app.get("/api/getByDate", reviewsController.getByDate);
+    app.get("/api/reviewFilter", reviewsController.reviewFilter);
 
 };
