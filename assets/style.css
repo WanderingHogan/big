@@ -23,3 +23,15 @@ img {
 	padding-top: 20px;
 	text-align: center;
 }
+
+.checked {
+    color: orange;
+}
+
+.stylisedCard {
+	width: auto; height: 250px; margin: 10px;
+}
+
+.pad-button-left {
+	padding-left: 8px;
+}

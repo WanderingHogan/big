@@ -76,7 +76,6 @@ module.exports =function(commonResponseWrapper, ReviewData) {
     }
 
     module.reviewFilter = function(req, res) {
-
         //optional params, return all if not specified
         let startDate = req.query.startDate;
         let endDate = req.query.endDate;
