@@ -13,6 +13,8 @@ let startDate = '2016-01-01'
 let endDate = '2018-12-30'
 let rating = 'All'
 
+let categories = ['edibles', 'hemp-cbd']
+
 // default stats
 let count = 0
 let max = 0
@@ -37,7 +39,7 @@ let unpad = function(str) {
 
 
 function requestData() {
-    $.get(`/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}`, function(response) {
+    $.get(`/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}&category=${encodeURIComponent(categories)}`, function(response) {
         max = response.data.length
         $("#recordCount").text(max)
         updateFilters(response)
@@ -156,6 +158,29 @@ $("#ratingSelector").change(function() {
     requestData()
 });
 
+$("#toggleCategoryEdible").click(function(event) {
+    event.preventDefault()
+    // showEdibles = !showEdibles;
+    let edibleIndex = categories.indexOf('edibles');
+	if (edibleIndex !== -1) categories.splice(edibleIndex, 1);
+	else {
+		categories.push('edibles')
+	}
+    requestData()
+
+})
+
+$("#toggleCategoryHempCBD").click(function(event) {
+    event.preventDefault()
+    let hempcbdIndex = categories.indexOf('hemp-cbd');
+	if (hempcbdIndex !== -1) categories.splice(hempcbdIndex, 1);
+	else {
+		categories.push('hemp-cbd')
+	}
+    requestData()
+
+})
+
 $("#clearFilters").click(function(event) {
     event.preventDefault()
     startDate = '2016-01-01'
@@ -167,6 +192,7 @@ $("#clearFilters").click(function(event) {
     requestData()
 
 })
+
 
 let myChart = echarts.init(document.getElementById('calendarChart'));
 

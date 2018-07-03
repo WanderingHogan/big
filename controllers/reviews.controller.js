@@ -84,6 +84,9 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             rating = '';
         }
         let category = req.query.category;
+
+        let catArray = category.split(",");
+        console.log(catArray)
         let subcategory = req.query.subcategory;
 
         let queryObj = {
@@ -109,11 +112,32 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             queryObj.rating = Number(rating)
         }
         if(category){
-            queryObj.category = String(category)
+            let ediblesExist = category.indexOf('edibles');
+            let hempcbdExist = category.indexOf('hemp-cbd');
+
+            // TODO this is stupid, think of a better way to do this
+            if ((ediblesExist !== -1) && (hempcbdExist !== -1)){
+                // both exist, don't add this to query
+            }
+            if ((ediblesExist !== -1) && (hempcbdExist === -1)){
+                // only edibles
+                queryObj.category = 'edibles'
+            }
+            if ((ediblesExist === -1) && (hempcbdExist !== -1)){
+                // only hemp-cbd
+                queryObj.category = 'hemp-cbd'
+            }
+            if ((ediblesExist === -1) && (hempcbdExist === -1)){
+                // neither exist
+                queryObj.category = "cats" // can be any word not in field
+            }
+
         }
         if(subcategory){
             queryObj.subcategory = String(subcategory)
         }
+
+        console.log(queryObj)
 
         ReviewData.find(queryObj).exec(function (err, data) {
             if(err) return res.status(500).send({status: 'server error occurred'})
