@@ -24,6 +24,10 @@ img {
 	text-align: center;
 }
 
+.mainChartColumn {
+	text-align: center;
+}
+
 .checked {
     color: orange;
 }

@@ -308,7 +308,7 @@ calendarOption = {
 let donutOption = {
     tooltip: {
         trigger: 'item',
-        formatter: "{b}: {c} ({d}%)"
+        formatter: "{b}: {d}% ({c} Reviews)"
     },
     legend: {
         orient: 'vertical',
