@@ -147,7 +147,31 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             let dateArray = []
 
             // TODO: refactor to an aggregae query, have mongo do this instead of blocking thread here
+            let countByRating = {
+                '1star': 0,
+                '2star': 0,
+                '3star': 0,
+                '4star': 0,
+                '5star': 0
+            }
             data.map(function(record){
+                switch(record.rating){
+                    case 1:
+                        countByRating['1star'] += 1;
+                        break;
+                    case 2:
+                        countByRating['2star'] += 1;
+                        break;
+                    case 3:
+                        countByRating['3star'] += 1;
+                        break;
+                    case 4:
+                        countByRating['4star'] += 1;
+                        break;
+                    case 5:
+                        countByRating['5star'] += 1;
+                        break;
+                }
                 let simpleDate = new Date(record.timestamp).toISOString()
                 simpleDate = simpleDate.split('T')[0] + 'T23:59:59.999Z'
                 let offsetDateObject = new Date(simpleDate)
@@ -163,7 +187,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             }, {}));
 
 
-            return res.status(200).send({status: 'Success', data: data, chartData: countObject});
+            return res.status(200).send({status: 'Success', data: data, chartData: countObject, reviewStars: countByRating});
         });
     }
 

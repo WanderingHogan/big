@@ -44,6 +44,7 @@ function requestData() {
 		categories.push('cats')
 	}
     $.get(`/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}&category=${encodeURIComponent(categories)}`, function(response) {
+
         max = response.data.length
         $("#recordCount").text(max)
         updateFilters(response)
@@ -110,6 +111,7 @@ function updateFilters(data) {
     let filtered2018 = []
     let filtered2017 = []
     let filtered2016 = []
+
     let newMax = 0;
 
     data.chartData.map(function(a) {
@@ -125,7 +127,7 @@ function updateFilters(data) {
         }
     })
 
-    myChart.setOption({
+    calendarChart.setOption({
         visualMap: {
             max: newMax
         },
@@ -140,6 +142,18 @@ function updateFilters(data) {
             data: filtered2016
         }]
     });
+
+    donutChart.setOption({
+    	series: [{
+            data:[
+                {value: data.reviewStars['1star'], name:'1 Star Reviews'},
+                {value: data.reviewStars['2star'], name:'2 Star Reviews'},
+                {value: data.reviewStars['3star'], name:'3 Star Reviews'},
+                {value: data.reviewStars['4star'], name:'4 Star Reviews'},
+                {value: data.reviewStars['5star'], name:'5 Star Reviews'}
+            ]
+        }]
+    })
     this.max = newMax;
     this.searching = false;
     this.results = data;
@@ -209,7 +223,8 @@ $("#clearFilters").click(function(event) {
 })
 
 
-let myChart = echarts.init(document.getElementById('calendarChart'));
+let calendarChart = echarts.init(document.getElementById('calendarChart'));
+let donutChart = echarts.init(document.getElementById('donutChart'));
 
 function getVirtulData(year) {
     let responseData;
@@ -226,7 +241,7 @@ function getVirtulData(year) {
     return responseData;
 }
 
-option = {
+calendarOption = {
     tooltip: {
         position: 'top'
     },
@@ -290,9 +305,52 @@ option = {
 
 };
 
+let donutOption = {
+    tooltip: {
+        trigger: 'item',
+        formatter: "{b}: {c} ({d}%)"
+    },
+    legend: {
+        orient: 'vertical',
+        x: 'left',
+        data:['1 Star Reviews','2 Star Reviews','3 Star Reviews','4 Star Reviews','5 Star Reviews']
+    },
+    series: [
+        {
+            type:'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+                normal: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    show: true,
+                    textStyle: {
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            labelLine: {
+                normal: {
+                    show: false
+                }
+            },
+            data:[
+                {value:0, name:'1 Star Reviews'},
+                {value:0, name:'2 Star Reviews'},
+                {value:0, name:'3 Star Reviews'},
+                {value:0, name:'4 Star Reviews'},
+                {value:0, name:'5 Star Reviews'}
+            ]
+        }
+    ]
+};
 
-myChart.setOption(option);
-
+calendarChart.setOption(calendarOption);
+donutChart.setOption(donutOption)
 
 $(document).ready(function() {
     console.log("page loaded - request data");
@@ -305,7 +363,7 @@ $(document).ready(function() {
 
 });
 
-myChart.on('click', function(params) {
+calendarChart.on('click', function(params) {
     startDate = params.value[0]
     endDate = params.value[0]
     requestData()
