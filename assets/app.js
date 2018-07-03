@@ -39,6 +39,10 @@ let unpad = function(str) {
 
 
 function requestData() {
+	if(categories.length === 0){
+		// tells the backend to look for category named cats, returning no records TODO: this is stupid
+		categories.push('cats')
+	}
     $.get(`/api/reviewFilter?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&rating=${rating}&category=${encodeURIComponent(categories)}`, function(response) {
         max = response.data.length
         $("#recordCount").text(max)
@@ -162,10 +166,15 @@ $("#toggleCategoryEdible").click(function(event) {
     event.preventDefault()
     // showEdibles = !showEdibles;
     let edibleIndex = categories.indexOf('edibles');
-	if (edibleIndex !== -1) categories.splice(edibleIndex, 1);
+	if (edibleIndex !== -1) {
+		categories.splice(edibleIndex, 1);
+		$('#toggleCategoryEdibletext').html(`&nbsp;Edibles (Off)`)
+	}
 	else {
 		categories.push('edibles')
+		$('#toggleCategoryEdibletext').html(`&nbsp;Edibles (On)`)
 	}
+	console.log('categories', categories)
     requestData()
 
 })
@@ -173,10 +182,15 @@ $("#toggleCategoryEdible").click(function(event) {
 $("#toggleCategoryHempCBD").click(function(event) {
     event.preventDefault()
     let hempcbdIndex = categories.indexOf('hemp-cbd');
-	if (hempcbdIndex !== -1) categories.splice(hempcbdIndex, 1);
+	if (hempcbdIndex !== -1) {
+		categories.splice(hempcbdIndex, 1)
+		$('#toggleCategoryHempCBDtext').html(`&nbsp;Hemp CBD (Off)`)
+	}
 	else {
 		categories.push('hemp-cbd')
+		$('#toggleCategoryHempCBDtext').html(`&nbsp;Hemp CBD (On)`)
 	}
+	console.log('categories', categories)
     requestData()
 
 })
@@ -186,6 +200,7 @@ $("#clearFilters").click(function(event) {
     startDate = '2016-01-01'
     endDate = '2018-12-30'
     rating = 'All'
+    categories = ['edibles', 'hemp-cbd']
     $("#startDateBox").val(startDate)
     $("#endDateBox").val(endDate)
     $("#ratingSelector").val(rating)

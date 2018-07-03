@@ -85,8 +85,9 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         }
         let category = req.query.category;
 
+
         let catArray = category.split(",");
-        console.log(catArray)
+
         let subcategory = req.query.subcategory;
 
         let queryObj = {
@@ -112,6 +113,7 @@ module.exports =function(commonResponseWrapper, ReviewData) {
             queryObj.rating = Number(rating)
         }
         if(category){
+            console.log('!!category', category)
             let ediblesExist = category.indexOf('edibles');
             let hempcbdExist = category.indexOf('hemp-cbd');
 
@@ -140,8 +142,8 @@ module.exports =function(commonResponseWrapper, ReviewData) {
         console.log(queryObj)
 
         ReviewData.find(queryObj).exec(function (err, data) {
-            if(err) return res.status(500).send({status: 'server error occurred'})
-            if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found'})
+            if(err) return res.status(500).send({status: 'server error occurred', data: [], chartData: []})
+            if(!err && data.length === 0) return res.status(200).send({status: 'No Data Found', data: [], chartData: []})
             let dateArray = []
 
             // TODO: refactor to an aggregae query, have mongo do this instead of blocking thread here
